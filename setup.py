@@ -12,6 +12,11 @@ setup(
         'ros2_test_communicate.node_compressed_image_preview',
         'ros2_test_communicate.node_depth_image_preview',
         'ros2_test_communicate.node_hololens_depth_preview',
+        'ros2_test_communicate.node_action_display',
+        'ros2_test_communicate.estHand_display',
+        'ros2_test_communicate.node_action_convert_coodinate',
+        'ros2_test_communicate.node_hl2_transform_broadcaster',
+        'ros2_test_communicate.node_hl2_transform_listener'
     ],
     data_files=[
         ('share/ament_index/resource_index/packages',
@@ -34,6 +39,9 @@ setup(
             'compressed_image_preview = ros2_test_communicate.node_compressed_image_preview:main',
             'depth_image_preview = ros2_test_communicate.node_depth_image_preview:main',
             'hololens_depth_preview = ros2_test_communicate.node_hololens_depth_preview:main',
+            'hand_action_display = ros2_test_communicate.node_action_display:main',
+            'hand_action_convert = ros2_test_communicate.node_action_convert_coodinate:main',
+            'hl2_tf_listener = ros2_test_communicate.node_hl2_transform_listener:main'
         ],
     },
 )
