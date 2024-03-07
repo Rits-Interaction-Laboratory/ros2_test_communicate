@@ -3,7 +3,7 @@ import message_filters
 import numpy as np
 import rclpy
 from rclpy.qos import QoSProfile, ReliabilityPolicy
-from sensor_msgs.msg import CompressedImage, CameraInfo
+from sensor_msgs.msg import Image, CompressedImage, CameraInfo
 
 from shigure_core.nodes.node_image_preview import ImagePreviewNode
 
@@ -19,6 +19,7 @@ class CompressedImagePreviewNode(ImagePreviewNode):
             self, 
             CompressedImage,
             "/rs/color/compressed",
+            #"/act_video_img",
             qos_profile=shigure_qos
         )
         depth_camera_info_subscriber = message_filters.Subscriber(
@@ -40,7 +41,7 @@ class CompressedImagePreviewNode(ImagePreviewNode):
 
         img = self.print_fps(color_img)
         cv2.namedWindow('Preview Color', cv2.WINDOW_NORMAL)
-        cv2.imshow('Preview Color', img)
+        cv2.imshow('Preview Color', color_img)
         cv2.waitKey(1)
 
 def main(args=None):

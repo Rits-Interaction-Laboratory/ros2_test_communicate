@@ -5,6 +5,7 @@ import rclpy
 from rclpy.node import Node
 from rclpy.qos import QoSProfile, ReliabilityPolicy
 from sensor_msgs.msg import Image
+import matplotlib.pyplot as plt
 
 class HololensDepthImagePreviewNode(Node):
     """Hololensから深度画像を受け取るためのノード"""
@@ -33,21 +34,38 @@ class HololensDepthImagePreviewNode(Node):
 
     def callback(self, depth_src:Image):
         # FPSカウントアップ
-        self.frame_count_up()
+        #self.frame_count_up()
 
+        #import pdb; pdb.set_trace()
         # Subscribe
         depth_img = self.bridge.imgmsg_to_cv2(depth_src, '16UC1')
 
         #  グレースケール画像化
         depth_img = depth_img.astype(np.float32)
-        depth_img = (depth_img/4096)* 256
+
+        # HololensがAHATモードの場合、1m以上の深度値は4095の外れ値で置き換えられているため、丸め込む。外れ値以外の最大値は1055
+        depth_img = np.where(depth_img > 4000, 1055, depth_img)
+        #depth_img = np.where(depth_img > 800, 800, depth_img)
+        #depth_img = np.where(depth_img < 500, 500, depth_img)
+        #depth_img = depth_img - 500
+        depth_img = (depth_img/1055)* 256
+        #depth_img = depth_img[150:350,150:350]
+        
         depth_img = depth_img.astype(np.uint8)
 
-        # FPS印字
-        depth_img = self.print_fps(depth_img)
+        depth_img = cv2.applyColorMap(depth_img, cv2.COLORMAP_JET)
 
+        # FPS印字
+        #depth_img = self.print_fps(depth_img)
+
+        # add color map sample
+        color_bar= cv2.applyColorMap(np.arange(256, dtype=np.uint8).reshape(1, -1), cv2.COLORMAP_JET)
+        color_bar = cv2.resize(color_bar, (depth_img.shape[1], 30))
+
+        result_img = np.vstack((depth_img, color_bar))
+        
         cv2.namedWindow('Preview Depth', cv2.WINDOW_NORMAL)
-        cv2.imshow('Preview Depth', depth_img)
+        cv2.imshow('Preview Depth', result_img)
         cv2.waitKey(1)
 
     def frame_count_up(self):
